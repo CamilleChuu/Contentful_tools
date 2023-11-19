@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .survey-container {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .question {
+            margin-bottom: 10px;
+        }
+        .options-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .options-container label {
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="survey-container">
+
+    <form id="surveyForm">
+        <div class="question">
+            <p>The craziness of Ryan's hair</p>
+            <div class="options-container" id="theCrazinessOfRyansHair">
+                <label><input type="radio" name="question1" value="Extremely satisfied"> Extremely satisfied</label>
+                <label><input type="radio" name="question1" value="Somewhat satisfied"> Somewhat satisfied</label>
+                <label><input type="radio" name="question1" value="Neither satisfied nor dissatisfied"> Neither satisfied nor dissatisfied</label>
+                <label><input type="radio" name="question1" value="Somewhat dissatisfied"> Somewhat dissatisfied</label>
+                <label><input type="radio" name="question1" value="Extremely dissatisfied"> Extremely dissatisfied</label>
+            </div>
+
+            <p>The number of dogs in the office</p>
+            <div class="options-container" id="theNumberOfDogsInTheOffice">
+                <label><input type="radio" name="question2" value="Extremely satisfied"> Extremely satisfied</label>
+                <label><input type="radio" name="question2" value="Somewhat satisfied"> Somewhat satisfied</label>
+                <label><input type="radio" name="question2" value="Neither satisfied nor dissatisfied"> Neither satisfied nor dissatisfied</label>
+                <label><input type="radio" name="question2" value="Somewhat dissatisfied"> Somewhat dissatisfied</label>
+                <label><input type="radio" name="question2" value="Extremely dissatisfied"> Extremely dissatisfied</label>
+            </div>
+
+            <p>The custom Qualtrics office decor</p>
+            <div class="options-container" id="theCustomQualtricsOfficeDecor">
+                <label><input type="radio" name="question3" value="Extremely satisfied"> Extremely satisfied</label>
+                <label><input type="radio" name="question3" value="Somewhat satisfied"> Somewhat satisfied</label>
+                <label><input type="radio" name="question3" value="Neither satisfied nor dissatisfied"> Neither satisfied nor dissatisfied</label>
+                <label><input type="radio" name="question3" value="Somewhat dissatisfied"> Somewhat dissatisfied</label>
+                <label><input type="radio" name="question3" value="Extremely dissatisfied"> Extremely dissatisfied</label>
+            </div>
+
+            <p>The energy of the world class support team</p>
+            <div class="options-container" id="theEnergyOfTheWorldClassSupportTeam">
+                <label><input type="radio" name="question4" value="Extremely satisfied"> Extremely satisfied</label>
+                <label><input type="radio" name="question4" value="Somewhat satisfied"> Somewhat satisfied</label>
+                <label><input type="radio" name="question4" value="Neither satisfied nor dissatisfied"> Neither satisfied nor dissatisfied</label>
+                <label><input type="radio" name="question4" value="Somewhat dissatisfied"> Somewhat dissatisfied</label>
+                <label><input type="radio" name="question4" value="Extremely dissatisfied"> Extremely dissatisfied</label>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    const SPACE_ID = 'wos687bwltf5';
+    const ACCESS_TOKEN = 'MH9N54pQdTTFXDIZoukdmO3ETqN1nLX9BBIgYpsG_78';
+    const CONTENT_TYPE = 'questionMatrix';
+
+    function populateFormWithData(data) {
+        // Map the Contentful fields to form fields
+        const crazinessOptions = document.getElementById('theCrazinessOfRyansHair');
+        if(data.fields.theCrazinessOfRyansHair && data.fields.theCrazinessOfRyansHair['en-US']) {
+            const selectedValue = data.fields.theCrazinessOfRyansHair['en-US'];
+            const optionsHtml = ['Extremely satisfied', 'Somewhat satisfied', 'Neither satisfied nor dissatisfied', 'Somewhat dissatisfied', 'Extremely dissatisfied']
+                .map(option => 
+                    `<label><input type="radio" name="question1" value="${option}" ${selectedValue === option ? 'checked' : ''}> ${option}</label>`
+                )
+                .join('');
+            crazinessOptions.innerHTML = optionsHtml;
+        }
+
+        const dogsOptions = document.getElementById('theNumberOfDogsInTheOffice');
+        if(data.fields.theNumberOfDogsInTheOffice && data.fields.theNumberOfDogsInTheOffice['en-US']) {
+            const selectedValue = data.fields.theNumberOfDogsInTheOffice['en-US'];
+            const optionsHtml = ['Extremely satisfied', 'Somewhat satisfied', 'Neither satisfied nor dissatisfied', 'Somewhat dissatisfied', 'Extremely dissatisfied']
+                .map(option => 
+                    `<label><input type="radio" name="question2" value="${option}" ${selectedValue === option ? 'checked' : ''}> ${option}</label>`
+                )
+                .join('');
+            dogsOptions.innerHTML = optionsHtml;
+        }
+
+        const qualtricsOptions = document.getElementById('theCustomQualtricsOfficeDecor');
+        if(data.fields.theCustomQualtricsOfficeDecor && data.fields.theCustomQualtricsOfficeDecor['en-US']) {
+            const selectedValue = data.fields.theCustomQualtricsOfficeDecor['en-US'];
+            const optionsHtml = ['Extremely satisfied', 'Somewhat satisfied', 'Neither satisfied nor dissatisfied', 'Somewhat dissatisfied', 'Extremely dissatisfied']
+                .map(option => 
+                    `<label><input type="radio" name="question3" value="${option}" ${selectedValue === option ? 'checked' : ''}> ${option}</label>`
+                )
+                .join('');
+            qualtricsOptions.innerHTML = optionsHtml;
+        }
+
+        const supportOptions = document.getElementById('theEnergyOfTheWorldClassSupportTeam');
+        if(data.fields.theEnergyOfTheWorldClassSupportTeam && data.fields.theEnergyOfTheWorldClassSupportTeam['en-US']) {
+            const selectedValue = data.fields.theEnergyOfTheWorldClassSupportTeam['en-US'];
+            const optionsHtml = ['Extremely satisfied', 'Somewhat satisfied', 'Neither satisfied nor dissatisfied', 'Somewhat dissatisfied', 'Extremely dissatisfied']
+                .map(option => 
+                    `<label><input type="radio" name="question4" value="${option}" ${selectedValue === option ? 'checked' : ''}> ${option}</label>`
+                )
+                .join('');
+            supportOptions.innerHTML = optionsHtml;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('http://localhost:3000/get-current-content')
+        .then(response => response.json())
+        .then(data => {
+            populateFormWithData(data); // Populate the form with fetched data
+        })
+        .catch(error => console.error('Error fetching initial data:', error));
+
+        const form = document.getElementById('surveyForm');
+        form.addEventListener('change', function(event) {
+            if (event.target.type === 'radio') {
+                const formData = new FormData(form);
+                const surveyData = {};
+                formData.forEach((value, key) => surveyData[key] = value);
+                updateContentful(surveyData); 
+            }
+        });
+    });
+
+
+    function updateContentful(data) {
+        console.log('Sending data to server:', data); 
+        fetch('http://localhost:3000/update-content', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+
+
+
+    
+</script>
+
+</body>
+</html>

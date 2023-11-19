@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Slider</title>
+<style>
+  .slider-container {
+    margin: 20px;
+  }
+  .slider-label {
+    font-size: 1rem;
+    margin-bottom: 5px;
+  }
+  .slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+  }
+  .slider:hover {
+    opacity: 1;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #f44336;
+    cursor: pointer;
+  }
+  .slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #f44336;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="slider-container">
+  <label for="food-slider" class="slider-label">Food</label>
+  <input type="range" min="0" max="100" value="30" class="slider" id="food-slider">
+  <span id="food-slider-value">30%</span>
+</div>
+
+<div class="slider-container">
+    <label for="entertainment" class="slider-label">Entertainment</label>
+    <input type="range" min="0" max="100" value="30" class="slider" id="entertainment-slider">
+    <span id="entertainment-slider-value">30%</span>
+</div>
+
+<div class="slider-container">
+    <label for="housing-slider" class="slider-label">Housing</label>
+    <input type="range" min="0" max="100" value="30" class="slider" id="housing-slider">
+    <span id="housing-slider-value">30%</span>
+</div>
+
+<script>
+// You would typically use `require` in a Node.js environment, not directly in the browser.
+// If you need to use this in the browser, include Contentful via script tag or use a module bundler.
+
+const contentful = require('contentful');
+
+const client = contentful.createClient({
+  space: 'wos687bwltf5',
+  environment: 'master', // defaults to 'master' if not set
+  accessToken: 'MH9N54pQdTTFXDIZoukdmO3ETqN1nLX9BBIgYpsG_78'
+});
+
+// Set up event listeners for each slider
+document.addEventListener('DOMContentLoaded', function() {
+  const sliders = document.querySelectorAll('.slider');
+  
+  sliders.forEach(slider => {
+    slider.oninput = function() {
+      const valueDisplay = document.getElementById(this.id + '-value');
+      valueDisplay.textContent = this.value + '%';
+      // Update the entry with the new value
+      updateEntry(this.id, this.value);
+    };
+  });
+});
+
+function updateEntry(sliderId, value) {
+  // Here you need to map your slider ID to a field in your Contentful entry
+  const fieldId = mapSliderIdToFieldId(sliderId);
+
+  client.getEntry('4PwGHCcyeNxN3JWMoJWVA6')
+    .then((entry) => {
+      entry.fields[fieldId]['en-US'] = value;
+      return client.updateEntry(entry);
+    })
+    .then((updatedEntry) => console.log('Entry updated:', updatedEntry))
+    .catch(console.error);
+}
+
+function mapSliderIdToFieldId(sliderId) {
+  // Map the slider's ID to the field ID in Contentful
+  const mapping = {
+    'food-slider': 'food', // Replace 'foodFieldId' with your actual field ID in Contentful
+    'entertainment-slider': 'entertainment',
+    'housing-slider': 'housing',
+  };
+  return mapping[sliderId];
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider Example</title>
+    <style>
+        #slider-container {
+            margin: 20px;
+        }
+
+        input[type='range'] {
+            width: 100%;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="slider-container">
+        <label for="foodSlider">Food: <span id="foodValue">0%</span></label>
+        <input type="range" id="foodSlider" name="food" min="0" max="100" value="0">
+        
+        <label for="entertainmentSlider">Entertainment: <span id="entertainmentValue">0%</span></label>
+        <input type="range" id="entertainmentSlider" name="entertainment" min="0" max="100" value="0">
+        
+        <label for="housingSlider">Housing: <span id="housingValue">0%</span></label>
+        <input type="range" id="housingSlider" name="housing" min="0" max="100" value="0">
+    </div>
+
+    <script>
+      const SPACE_ID = 'wos687bwltf5';
+      const ACCESS_TOKEN = 'MH9N54pQdTTFXDIZoukdmO3ETqN1nLX9BBIgYpsG_78';
+      const CONTENT_TYPE = 'sliderContent'; 
+    
+      function debounce(func, delay) {
+        let debounceTimer;
+        return function() {
+          const context = this;
+          const args = arguments;
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => func.apply(context, args), delay);
+        };
+      }
+    
+      function updateSliderValue(name, value) {
+        var valueDisplay = document.getElementById(name + "Value");
+        valueDisplay.textContent = value + '%'; // Append the '%' for display
+      }
+    
+      function fetchEntries() {
+        const ENDPOINT_URL = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/master/entries?access_token=${ACCESS_TOKEN}&content_type=${CONTENT_TYPE}`;
+
+        fetch(ENDPOINT_URL)
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Network response was not ok');
+            }
+          })
+          .then(data => {
+            console.log(data); 
+            const fields = data.items[0].fields; // access the first item's fields
+
+            // Update the slider values and text display
+            const foodSlider = document.getElementById('foodSlider');
+            const foodValue = document.getElementById('foodValue');
+            const entertainmentSlider = document.getElementById('entertainmentSlider');
+            const entertainmentValue = document.getElementById('entertainmentValue');
+            const housingSlider = document.getElementById('housingSlider');
+            const housingValue = document.getElementById('housingValue');
+
+            if (foodSlider && foodValue) {
+              foodSlider.value = fields.food;
+              foodValue.textContent = fields.food + '%'; // Adding '%' for display
+            }
+            if (entertainmentSlider && entertainmentValue) {
+              entertainmentSlider.value = fields.entertainment;
+              entertainmentValue.textContent = fields.entertainment + '%'; 
+            }
+            if (housingSlider && housingValue) {
+              housingSlider.value = fields.housing;
+              housingValue.textContent = fields.housing + '%'; 
+            }
+          })
+          .catch(error => {
+            console.error('Fetch error:', error);
+          });
+      }
+    
+      function updateContentful(fieldId, value) {
+        console.log("hi");
+        const parsedValue = parseInt(value, 10); // convert the value to an integer
+        updateSliderValue(fieldId, parsedValue);
+
+        const foodValue = parseInt(document.getElementById('foodSlider').value, 10);
+        const entertainmentValue = parseInt(document.getElementById('entertainmentSlider').value, 10);
+        const housingValue = parseInt(document.getElementById('housingSlider').value, 10);
+
+        // Prepare the data payload with current values of all sliders
+        const dataPayload = {
+          food: foodValue,
+          entertainment: entertainmentValue,
+          housing: housingValue
+        };
+
+        // Update the specific field with the new value
+        dataPayload[fieldId] = parsedValue;
+    
+        fetch('http://localhost:3000/update-content', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          // body: JSON.stringify({ fieldId, value: parsedValue })
+          body: JSON.stringify(dataPayload) // Send the complete data payload
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Contentful update response:', data);
+        })
+        .catch(error => {
+          console.error('There was an error updating the content:', error);
+        });
+      }
+    
+      document.addEventListener('DOMContentLoaded', function() {
+        fetchEntries();
+    
+        document.getElementById('foodSlider').oninput = debounce(function() {
+          updateContentful('food', this.value);
+        }, 500); // Adjust the delay as needed
+    
+        document.getElementById('entertainmentSlider').oninput = debounce(function() {
+          updateContentful('entertainment', this.value);
+        }, 500); // Adjust the delay as needed
+    
+        document.getElementById('housingSlider').oninput = debounce(function() {
+          updateContentful('housing', this.value);
+        }, 500); // Adjust the delay as needed
+      });
+    </script>
+    
+
+</body>
+</html>
+
+
+
+
